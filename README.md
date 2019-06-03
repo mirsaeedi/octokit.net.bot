@@ -103,4 +103,36 @@ var commentResponse = await eventContext.InstallationContext
 
 ```
 
-# 
+If you want to query your app specific information, you should use the client that is provided through the **AppClient** property of **EventContext**.
+
+```C#
+eventContext.AppClient
+```
+
+# Registring Handlers
+
+Finally, you need to register your handlers inside _Startup_ class. 
+
+ 1. First, you need to introduce your handlers to the DI mechanism
+ 2. Then, you can link each handler with its corresponding event
+ 
+```C#
+
+public void ConfigureServices(IServiceCollection services)
+{
+   services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+   // 1. configure required parameters for WebHook handling to work
+   services.Configure<GitHubOption>(Configuration.GetSection("github"));
+
+   // 2. register webhook handlers
+   services.AddScoped<IssueCommentEventHandler>();
+   services.AddScoped<IssueEventHandler>();
+
+   // 2. wire the handlers and corresponding events
+   services.AddGitHubWebHookHandler(registry => registry
+           .RegisterHandler<IssueCommentEventHandler>("issue_comment")
+           .RegisterHandler<IssueEventHandler>("issue"));
+}
+
+```

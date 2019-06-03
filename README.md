@@ -49,11 +49,11 @@ Next, in the _startup_ class inside the _ConfigureServices_ add the following li
 services.Configure<GitHubOption>(Configuration.GetSection("github"));
 ```
 
-The **GitHubOption** nelongs to Octokit.Bot and holds the required information.
+The **GitHubOption** nelongs to Octokit.Bot and holds the required information. 
 
 # Event Handlers
 
-To implement an event handler you should create a class that inherits from **IHookHandler**.
+To implement an event handler you should create a class that inherits from **IHookHandler**. The following Handler is going to Handle [_IssueCommentEvent_](https://developer.github.com/v3/activity/events/types/#issuecommentevent). Using the _GetPayload()_ method of _EventContext_ you can query the payload with the same structure defined by GitHub. Since the access is provided dynamically, intellisense is not available in your IDE.
 
 ```C#
 public class IssueCommentEventHandler : IHookHandler

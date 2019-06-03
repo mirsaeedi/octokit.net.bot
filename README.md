@@ -49,4 +49,40 @@ Next, in the _startup_ class inside the _ConfigureServices_ add the following li
 services.Configure<GitHubOption>(Configuration.GetSection("github"));
 ```
 
-The _GitHubOption_ nelongs to Octokit.Bot and holds the required information.
+The **GitHubOption** nelongs to Octokit.Bot and holds the required information.
+
+# Event Handlers
+
+To implement an event handler you should create a class that inherits from **IHookHandler**.
+
+```C#
+public class IssueCommentEventHandler : IHookHandler
+    {
+        public async Task Handle(EventContext eventContext)
+        {
+        
+            // check if the message is issued by github
+            if (!eventContext.WebHookEvent.IsMessageAuthenticated)
+            {
+                // message is not issued by GitHub. Possibly from a malucious attacker.
+                // log it and return;
+                return;
+            }
+
+            // use GetPayload() to access the json payload as defined by GitHub
+            
+            var action = eventContext.WebHookEvent.GetPayload().action;
+
+            if (action != "created")
+                return;
+
+            var body = (string)eventContext.WebHookEvent.GetPayload().comment.body;
+
+            body = body.Trim();
+
+            var authorAssociation = (string)eventContext.WebHookEvent.GetPayload().comment.author_association;
+
+            // do your logic here
+        }
+    }
+```

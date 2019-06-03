@@ -22,6 +22,11 @@ It seems you need to do some tweaks to make smee.io works with your ASP.NET Core
 
  1. Disable HTTPS in your develop environment. To do So, you can go to the Propertise page of your web application, Then click on debug and diselect _Enable SSL_.
  2. Make your web app to load at port 3000 and IP 127.0.0.1 (http://127.0.0.1:3000). To do So, you can go to the Propertise page of your web application, Then click on debug and change the _App URL_ to _http://127.0.0.1:3000_.
+ 3. Finnaly, you can run smee using the following command. So, it can redirect GitHub webhooks to your application
+ 
+ ```powershell
+    smee --url https://smee.io/xpi2SJ9Xqz8Tv8w --path /github/hooks
+ ```
 
 # GitHub Apps
 

@@ -17,4 +17,36 @@ It seems you need to do some tweaks to make smee.io works with your ASP.NET Core
 
 # GitHub Apps
 
-At first, you need to define your GitHub application in GitHub's setting page. Detailed instructions are provided by GitHub [here](https://developer.github.com/apps/building-github-apps/creating-a-github-app/).
+At first, you need to define your GitHub application in GitHub's setting page. Follow the instructions of [Step 2](https://developer.github.com/apps/quickstart-guides/setting-up-your-development-environment/#step-2-register-a-new-github-app) from GitHub tutorial. Detailed instructions are also provided by GitHub [here](https://developer.github.com/apps/building-github-apps/creating-a-github-app/).
+
+# Configuration
+
+Octokit requires _AppName_, _AppIdentifier_, _WebHookSecret_, and your app's _PrivateKey_. You need to provide these values through ASP.NET configuration mechanism. For example the _appsettings.json_ should be like the following:
+
+```json
+{
+  "github": {
+    "WebHookSecret": "",
+    "AppIdentifier": "",
+    "PrivateKey": "",
+    "AppName": ""
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+```
+
+I'd recommend putting the private key as an environment variable with the name **github__privatekey** instead of having it inside _appsettings.json_.
+
+Next, in the _startup_ class inside the _ConfigureServices_ add the following line:
+
+```C#
+services.Configure<GitHubOption>(Configuration.GetSection("github"));
+```
+
+The _GitHubOption_ nelongs to Octokit.Bot and holds the required information.

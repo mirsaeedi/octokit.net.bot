@@ -2,6 +2,14 @@
 
 Creating GitHub Apps using C# and ASP.NET Core is easy using Octokit.Bot. This library takes care of lots of boiler plate code and lets you focus on nothing except your own problem.
 
+Octokit uses the awesome [Octokit.net](https://github.com/octokit/octokit.net) library and [Octokit.net.extention](https://github.com/mirsaeedi/octokit.net.extensions) to make http connections ressilient.
+
+# Installation
+
+```powershell
+Install-Package Octokit.Bot
+```
+
 # Development Environment
 
 If you want to test your bot inside development environment, you need a way to route GitHub's webhooks to your development machine. Since your development machine does not have a static IP address that is exposed to internet, you have to use the awesome tool provided by [Probot team](https://github.com/probot/probot) called [smee.io](https://github.com/probot/smee-client).
@@ -135,4 +143,12 @@ public void ConfigureServices(IServiceCollection services)
            .RegisterHandler<IssueEventHandler>("issue"));
 }
 
+```
+
+# Installation Client
+
+The installation client is provided via _EventContext_. However, if you want to have access to the installation client outside of event handlers, you can instantiate one using the **GitHubClientFactory** class. The **CreateGitHubInstallationClient** method gets an instance of _GitHubOption_ along with an installationId and returns an Octokit client that has access to the installation repository or organization.
+
+```C#
+GitHubClientFactory.CreateGitHubInstallationClient(gitHubOption,installationId);
 ```

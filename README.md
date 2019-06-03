@@ -86,3 +86,21 @@ public class IssueCommentEventHandler : IHookHandler
         }
     }
 ```
+
+# Interating with GitHub
+
+If you want to send a command to GitHub such as submitting a comment in one of the repositories, you can do so by using the [Octokit.net](https://github.com/octokit/octokit.net) client that is provided by Octokit.Bot. As you can see in the [IssueCommentEventHandler] we can submit a comment using the **Client** property of **InstallationContext**. This client has a full access to the repository or organization that has installed your application.
+
+```C#
+
+var issueNumber = (int)eventContext.WebHookEvent.GetPayload().issue.number;
+var repositoryId = (long)eventContext.WebHookEvent.GetPayload().repository.id;
+
+var commentResponse = await eventContext.InstallationContext
+                                       .Client
+                                       .Issue.Comment
+                                       .Create(repositoryId, issueNumber, "Hello There");
+
+```
+
+# 

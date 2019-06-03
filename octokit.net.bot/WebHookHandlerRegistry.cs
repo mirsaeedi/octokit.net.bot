@@ -1,19 +1,9 @@
-﻿using JWT;
-using JWT.Algorithms;
-using JWT.Serializers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Octokit;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.OpenSsl;
-using Org.BouncyCastle.Security;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Octokit.Bot
 {
@@ -21,15 +11,19 @@ namespace Octokit.Bot
     {
         public delegate Task HandleWebHook(EventContext eventContext);
 
+        private readonly IServiceProvider _serviceProvider;
         private readonly GitHubOption _gitHubOption;
+        private readonly HttpContext _httpContext;
         private readonly Dictionary<string, List<HandleWebHook>> _registry = new Dictionary<string, List<HandleWebHook>>();
 
-        public WebHookHandlerRegistry(GitHubOption gitHubOption)
+        public WebHookHandlerRegistry(IServiceProvider serviceProvider)
         {
-            _gitHubOption = gitHubOption;
+            _serviceProvider = serviceProvider;
+            _gitHubOption = serviceProvider.GetService<IOptions<GitHubOption>>().Value;
+            _httpContext = serviceProvider.GetService<IHttpContextAccessor>().HttpContext;
         }
 
-        public void RegisterHandler(string eventName, HandleWebHook webHookHandler)
+        public WebHookHandlerRegistry RegisterHandler(string eventName, HandleWebHook webHookHandler)
         {
             if (!_registry.ContainsKey(eventName))
             {
@@ -37,14 +31,27 @@ namespace Octokit.Bot
             }
 
             _registry[eventName].Add(webHookHandler);
+
+            return this;
         }
 
-        public void UnRegisterHandler(string eventName, HandleWebHook webHookHandler)
+        public WebHookHandlerRegistry RegisterHandler<THookHandler>(string eventName) where THookHandler : IHookHandler
         {
-            if (_registry.ContainsKey(eventName))
+            var handler = _serviceProvider.GetService(typeof(THookHandler)) as IHookHandler;
+
+            if (handler == null)
             {
-                _registry[eventName].Remove(webHookHandler);
+                throw new ArgumentNullException(nameof(handler));
             }
+
+            if (!_registry.ContainsKey(eventName))
+            {
+                _registry[eventName] = new List<HandleWebHook>();
+            }
+
+            _registry[eventName].Add(handler.Handle);
+
+            return this;
         }
 
         public async Task Handle(WebHookEvent webhookEvent)
@@ -52,21 +59,23 @@ namespace Octokit.Bot
             var installationId = webhookEvent.GetInstallationId();
 
             var appClient = GitHubClientFactory.CreateGitHubAppClient(_gitHubOption);
+
             var installationContext = !installationId.HasValue
-            ? (null,null)
-            :await GitHubClientFactory.CreateGitHubInstallationClient(appClient,installationId.Value, _gitHubOption.AppName);
+            ? null
+            : await GitHubClientFactory.CreateGitHubInstallationClient(appClient, installationId.Value, _gitHubOption.AppName);
 
-            var handlers = _registry.ContainsKey(webhookEvent.GitHubEvent)? _registry[webhookEvent.GitHubEvent] :null;
-
-            if (handlers != null)
+            if (_registry.ContainsKey(webhookEvent.GitHubEvent))
             {
-                var context = new EventContext(webhookEvent, installationContext.AccessToken, installationContext.Client, appClient);
+                var context = new EventContext(_httpContext,webhookEvent, installationContext, appClient);
+
+                var handlers = _registry[webhookEvent.GitHubEvent];
+
                 foreach (var handler in handlers)
                 {
                     await handler(context);
                 }
             }
-                
+
         }
     }
 }

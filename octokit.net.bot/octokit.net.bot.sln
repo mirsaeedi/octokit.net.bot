@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28822.285
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "octokit.net.bot", "octokit.net.bot.csproj", "{C67A369A-4BBE-48F4-BE2D-F2F2251A2396}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "octokit.net.bot.test", "..\octokit.net.bot.test\octokit.net.bot.test.csproj", "{9B84FD9C-F8A7-4526-91B7-748FFE83D7ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C67A369A-4BBE-48F4-BE2D-F2F2251A2396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C67A369A-4BBE-48F4-BE2D-F2F2251A2396}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C67A369A-4BBE-48F4-BE2D-F2F2251A2396}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C67A369A-4BBE-48F4-BE2D-F2F2251A2396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B84FD9C-F8A7-4526-91B7-748FFE83D7ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B84FD9C-F8A7-4526-91B7-748FFE83D7ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B84FD9C-F8A7-4526-91B7-748FFE83D7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B84FD9C-F8A7-4526-91B7-748FFE83D7ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9B151F81-5749-44A7-8231-9DD2D3F0AADB}
+	EndGlobalSection
+EndGlobal

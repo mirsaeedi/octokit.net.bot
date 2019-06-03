@@ -22,25 +22,24 @@ namespace Octokit.Bot
             return GetAppClient(option, option.AppName);
         }
 
-        public static async Task<(AccessToken AccessToken, GitHubClient Client)> CreateGitHubInstallationClient(GitHubClient appClient, long installationId, string appName)
+        public static async Task<InstallationContext> CreateGitHubInstallationClient(GitHubClient appClient, long installationId, string appName)
         {
             return await GetInstallationContext(appClient, installationId, appName);
         }
 
-
-        public static async Task<(AccessToken AccessToken, GitHubClient Client)> CreateGitHubInstallationClient(GitHubOption option,long installationId)
+        public static async Task<InstallationContext> CreateGitHubInstallationClient(GitHubOption option,long installationId)
         {
             return await CreateGitHubInstallationClient(CreateGitHubAppClient(option), installationId, option.AppName);
         }
 
-        private static async Task<(AccessToken AccessToken, GitHubClient InstallationClient)> GetInstallationContext(GitHubClient appClient, long installationId, string appName)
+        private static async Task<InstallationContext> GetInstallationContext(GitHubClient appClient, long installationId, string appName)
         {
             var accessToken = await appClient.GitHubApps.CreateInstallationToken(installationId);
 
             var installationClient = new ResilientGitHubClientFactory()
                 .Create(new ProductHeaderValue($"{appName}-Installation{installationId}"), new Credentials(accessToken.Token), new InMemoryCacheProvider());
 
-            return (accessToken, installationClient);
+            return new InstallationContext(installationClient,accessToken);
         }
 
         private static GitHubClient GetAppClient(GitHubOption option, string appName)

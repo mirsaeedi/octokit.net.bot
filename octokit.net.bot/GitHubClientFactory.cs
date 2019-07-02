@@ -20,6 +20,7 @@ namespace Octokit.Bot
         public static  GitHubClient CreateGitHubAppClient(GitHubOption option)
         {
             return GetAppClient(option, option.AppName);
+
         }
 
         public static async Task<InstallationContext> CreateGitHubInstallationClient(GitHubClient appClient, long installationId, string appName)
@@ -81,7 +82,7 @@ namespace Octokit.Bot
 
         private static IJwtEncoder GetRS256JWTEncoder(RSACryptoServiceProvider csp)
         {
-            var algorithm = new RS256Algorithm(null, csp);
+            var algorithm = new RS256Algorithm(publicKey: csp, privateKey: csp); // sending public key is not nesseccary but we have to to pass it.
             var serializer = new JsonNetSerializer();
             var urlEncoder = new JwtBase64UrlEncoder();
             var encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
